@@ -5,6 +5,7 @@
 package tesGUI;
 
 import javax.swing.table.DefaultTableModel;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -35,7 +36,7 @@ public class TesGUI extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblStudents = new javax.swing.JTable();
-        btnPrint = new javax.swing.JButton();
+        btnDelete = new javax.swing.JButton();
         tfMajor = new javax.swing.JTextField();
         tfName = new javax.swing.JTextField();
         tfNim = new javax.swing.JTextField();
@@ -57,6 +58,7 @@ public class TesGUI extends javax.swing.JFrame {
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         tblStudents.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -76,11 +78,10 @@ public class TesGUI extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(tblStudents);
 
-        btnPrint.setText("Cetak");
-
-        tfNim.addActionListener(new java.awt.event.ActionListener() {
+        btnDelete.setText("Hapus");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tfNimActionPerformed(evt);
+                btnDeleteActionPerformed(evt);
             }
         });
 
@@ -97,7 +98,7 @@ public class TesGUI extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Inter", 0, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 0, 255));
         jLabel1.setText("Desktop App Canggih Pertama Saya");
 
@@ -126,7 +127,7 @@ public class TesGUI extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(btnAdd)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnPrint)))))
+                                .addComponent(btnDelete)))))
                 .addContainerGap(98, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
@@ -152,25 +153,31 @@ public class TesGUI extends javax.swing.JFrame {
                     .addComponent(tfMajor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnPrint)
+                    .addComponent(btnDelete)
                     .addComponent(btnAdd))
                 .addGap(56, 56, 56)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(65, Short.MAX_VALUE))
+                .addContainerGap(63, Short.MAX_VALUE))
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void tfNimActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfNimActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tfNimActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         String nim, name, major;
         nim = tfNim.getText();
         name = tfName.getText();
         major = tfMajor.getText();
+        
+        if(
+            nim.length() <= 0 ||
+            name.length() <= 0 ||
+            major.length() <= 0
+        ) {
+            JOptionPane.showMessageDialog(null, "Gagal di tambahkan, ada yang kosong!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         
         Object[] data = {nim, name, major};
         
@@ -179,7 +186,19 @@ public class TesGUI extends javax.swing.JFrame {
         tfNim.setText("");
         tfName.setText("");
         tfMajor.setText("");
+        
+        JOptionPane.showMessageDialog(null, "Berhasil menambah data!");
     }//GEN-LAST:event_btnAddActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+         if(tblStudents.getSelectedRow() == -1){
+             JOptionPane.showMessageDialog(null, "Tidak ada data yang di pilih!", "Error", JOptionPane.ERROR_MESSAGE);
+             return;
+         }
+         
+         model.removeRow(tblStudents.getSelectedRow());
+         JOptionPane.showMessageDialog(null, "Berhasil di hapus!");
+    }//GEN-LAST:event_btnDeleteActionPerformed
 
     /**
      * @param args the command line arguments
@@ -218,7 +237,7 @@ public class TesGUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
-    private javax.swing.JButton btnPrint;
+    private javax.swing.JButton btnDelete;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
