@@ -6,14 +6,39 @@ package tesGUI;
 
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
+import java.sql.*;
 
 /**
  *
  * @author ibnumardini
  */
 public class TesGUI extends javax.swing.JFrame {
-    
+
     DefaultTableModel model;
+
+    private void loadData() {
+        String name, nim, major;
+
+        model.setRowCount(0);
+
+        try {
+            Connection con = Koneksi.getConnection();
+            Statement st = con.createStatement();
+            String query = "SELECT nim, name, major FROM students";
+            ResultSet rs = st.executeQuery(query);
+            while (rs.next()) {
+                name = rs.getString("name");
+                nim = rs.getString("nim");
+                major = rs.getString("major");
+
+                Object[] data = {nim, name, major};
+
+                model.addRow(data);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Creates new form TesGUI
@@ -22,6 +47,7 @@ public class TesGUI extends javax.swing.JFrame {
         initComponents();
         model = (DefaultTableModel) tblStudents.getModel();
         tblStudents.setModel(model);
+        loadData();
     }
 
     /**
@@ -169,35 +195,49 @@ public class TesGUI extends javax.swing.JFrame {
         nim = tfNim.getText();
         name = tfName.getText();
         major = tfMajor.getText();
-        
-        if(
-            nim.length() <= 0 ||
-            name.length() <= 0 ||
-            major.length() <= 0
-        ) {
+
+        if (nim.isBlank() || name.isBlank() || major.isBlank()) {
             JOptionPane.showMessageDialog(null, "Gagal di tambahkan, ada yang kosong!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
-        Object[] data = {nim, name, major};
-        
-        model.addRow(data);
-        
+
+        try {
+            Connection con = Koneksi.getConnection();
+
+            String query = "INSERT INTO students(nim, name, major) VALUES (?, ?, ?)";
+
+            try (PreparedStatement stmt = con.prepareStatement(query)) {
+                stmt.setString(1, nim);
+                stmt.setString(2, name);
+                stmt.setString(3, major);
+
+                stmt.executeUpdate();
+            }
+
+            System.out.println("Executed!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Gagal menambah data!, " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        loadData();
+
         tfNim.setText("");
         tfName.setText("");
         tfMajor.setText("");
-        
+
         JOptionPane.showMessageDialog(null, "Berhasil menambah data!");
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-         if(tblStudents.getSelectedRow() == -1){
-             JOptionPane.showMessageDialog(null, "Tidak ada data yang di pilih!", "Error", JOptionPane.ERROR_MESSAGE);
-             return;
-         }
-         
-         model.removeRow(tblStudents.getSelectedRow());
-         JOptionPane.showMessageDialog(null, "Berhasil di hapus!");
+        if (tblStudents.getSelectedRow() == -1) {
+            JOptionPane.showMessageDialog(null, "Tidak ada data yang di pilih!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        model.removeRow(tblStudents.getSelectedRow());
+        JOptionPane.showMessageDialog(null, "Berhasil di hapus!");
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     /**
