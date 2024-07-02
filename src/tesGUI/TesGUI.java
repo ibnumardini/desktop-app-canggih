@@ -17,21 +17,22 @@ public class TesGUI extends javax.swing.JFrame {
     DefaultTableModel model;
 
     private void loadData() {
-        String name, nim, major;
+        String name, nim, phone, major;
 
         model.setRowCount(0);
 
         try {
             Connection con = Koneksi.getConnection();
             Statement st = con.createStatement();
-            String query = "SELECT nim, name, major FROM students";
+            String query = "SELECT nim, phone, name, major FROM students";
             ResultSet rs = st.executeQuery(query);
             while (rs.next()) {
                 name = rs.getString("name");
                 nim = rs.getString("nim");
+                phone = rs.getString("phone");
                 major = rs.getString("major");
 
-                Object[] data = {nim, name, major};
+                Object[] data = {nim, name, phone, major};
 
                 model.addRow(data);
             }
@@ -71,6 +72,8 @@ public class TesGUI extends javax.swing.JFrame {
         lbMajor = new javax.swing.JLabel();
         btnAdd = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        tfPhone = new javax.swing.JTextField();
+        lbPhone = new javax.swing.JLabel();
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -91,11 +94,11 @@ public class TesGUI extends javax.swing.JFrame {
 
             },
             new String [] {
-                "NIM", "Nama", "Prodi"
+                "NIM", "Nama", "Phone", "Prodi"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                true, false, true
+                true, false, true, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -108,6 +111,12 @@ public class TesGUI extends javax.swing.JFrame {
         btnDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnDeleteActionPerformed(evt);
+            }
+        });
+
+        tfNim.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tfNimActionPerformed(evt);
             }
         });
 
@@ -128,6 +137,8 @@ public class TesGUI extends javax.swing.JFrame {
         jLabel1.setForeground(new java.awt.Color(0, 0, 255));
         jLabel1.setText("Desktop App Canggih Pertama Saya");
 
+        lbPhone.setText("Phone");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -144,12 +155,14 @@ public class TesGUI extends javax.swing.JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(lbNim)
                                     .addComponent(lbMajor)
-                                    .addComponent(lbName))
+                                    .addComponent(lbName)
+                                    .addComponent(lbPhone))
                                 .addGap(49, 49, 49)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                     .addComponent(tfNim)
                                     .addComponent(tfName)
-                                    .addComponent(tfMajor, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(tfMajor, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(tfPhone, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(btnAdd)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -177,13 +190,17 @@ public class TesGUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(lbMajor)
                     .addComponent(tfMajor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(lbPhone)
+                    .addComponent(tfPhone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnDelete)
                     .addComponent(btnAdd))
                 .addGap(56, 56, 56)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(63, Short.MAX_VALUE))
+                .addContainerGap(30, Short.MAX_VALUE))
         );
 
         pack();
@@ -191,12 +208,13 @@ public class TesGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-        String nim, name, major;
+        String nim, name, phone, major;
         nim = tfNim.getText();
         name = tfName.getText();
+        phone = tfPhone.getText();
         major = tfMajor.getText();
 
-        if (nim.isBlank() || name.isBlank() || major.isBlank()) {
+        if (nim.isBlank() || name.isBlank() || phone.isBlank() || major.isBlank()) {
             JOptionPane.showMessageDialog(null, "Gagal di tambahkan, ada yang kosong!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -204,12 +222,13 @@ public class TesGUI extends javax.swing.JFrame {
         try {
             Connection con = Koneksi.getConnection();
 
-            String query = "INSERT INTO students(nim, name, major) VALUES (?, ?, ?)";
+            String query = "INSERT INTO students(nim, name, phone, major) VALUES (?, ?, ?, ?)";
 
             try (PreparedStatement stmt = con.prepareStatement(query)) {
                 stmt.setString(1, nim);
                 stmt.setString(2, name);
-                stmt.setString(3, major);
+                stmt.setString(3, phone);
+                stmt.setString(4, major);
 
                 stmt.executeUpdate();
             }
@@ -225,6 +244,7 @@ public class TesGUI extends javax.swing.JFrame {
 
         tfNim.setText("");
         tfName.setText("");
+        tfPhone.setText("");
         tfMajor.setText("");
 
         JOptionPane.showMessageDialog(null, "Berhasil menambah data!");
@@ -284,9 +304,11 @@ public class TesGUI extends javax.swing.JFrame {
     private javax.swing.JLabel lbMajor;
     private javax.swing.JLabel lbName;
     private javax.swing.JLabel lbNim;
+    private javax.swing.JLabel lbPhone;
     private javax.swing.JTable tblStudents;
     private javax.swing.JTextField tfMajor;
     private javax.swing.JTextField tfName;
     private javax.swing.JTextField tfNim;
+    private javax.swing.JTextField tfPhone;
     // End of variables declaration//GEN-END:variables
 }
