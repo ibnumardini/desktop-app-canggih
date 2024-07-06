@@ -6,7 +6,13 @@ package tesGUI;
 
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
+import java.io.File;
 import java.sql.*;
+import jxl.Sheet;
+import jxl.Workbook;
+import jxl.write.Label;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
 
 /**
  *
@@ -74,6 +80,8 @@ public class TesGUI extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         tfPhone = new javax.swing.JTextField();
         lbPhone = new javax.swing.JLabel();
+        btnSimpan = new javax.swing.JButton();
+        btnTampil = new javax.swing.JButton();
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -139,6 +147,20 @@ public class TesGUI extends javax.swing.JFrame {
 
         lbPhone.setText("Phone");
 
+        btnSimpan.setText("Simpan");
+        btnSimpan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSimpanActionPerformed(evt);
+            }
+        });
+
+        btnTampil.setText("Tampil");
+        btnTampil.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTampilActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -166,7 +188,11 @@ public class TesGUI extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(btnAdd)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnDelete)))))
+                                .addComponent(btnDelete)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnSimpan)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnTampil)))))
                 .addContainerGap(98, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
@@ -197,7 +223,9 @@ public class TesGUI extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnDelete)
-                    .addComponent(btnAdd))
+                    .addComponent(btnAdd)
+                    .addComponent(btnSimpan)
+                    .addComponent(btnTampil))
                 .addGap(56, 56, 56)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(30, Short.MAX_VALUE))
@@ -260,6 +288,68 @@ public class TesGUI extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null, "Berhasil di hapus!");
     }//GEN-LAST:event_btnDeleteActionPerformed
 
+
+    private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
+        // TODO add your handling code here:
+        String path = "/home/ibnumardini/Campus/prak-pbo/15-excel/DataMahasiswa.xls";
+        File excelFile = new File(path);
+        WritableWorkbook wb;
+
+        try {
+            wb = Workbook.createWorkbook(excelFile);
+            WritableSheet sheet = wb.createSheet("Data Mahasiswa", 0);
+
+            for (int i = 0; i < model.getColumnCount(); i++) {
+                sheet.addCell(new Label(i, 0, model.getColumnName(i)));
+            }
+
+            for (int i = 0; i < model.getRowCount(); i++) {
+                for (int j = 0; j < model.getColumnCount(); j++) {
+                    String data = model.getValueAt(i, j).toString();
+
+                    sheet.addCell(new Label(j, i + 1, data));
+                }
+            }
+
+            wb.write();
+            wb.close();
+
+            JOptionPane.showMessageDialog(null, "Data tersimpan!");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_btnSimpanActionPerformed
+
+    private void btnTampilActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTampilActionPerformed
+        // TODO add your handling code here:
+        readExcelFile();
+    }//GEN-LAST:event_btnTampilActionPerformed
+
+    private void readExcelFile() {
+        String path = "/home/ibnumardini/Campus/prak-pbo/15-excel/DataMahasiswa.xls";
+        File excelFile = new File(path);
+
+        Workbook wb;
+
+        try {
+            wb = Workbook.getWorkbook(excelFile);
+            Sheet sheet = wb.getSheet(0);
+            Object[] obj = new Object[sheet.getColumns()];
+
+            for (int i = 1; i < sheet.getRows(); i++) {
+                for (int j = 0; j < sheet.getColumns(); j++) {
+                    obj[j] = sheet.getCell(j, i).getContents();
+                }
+
+                model.addRow(obj);
+            }
+
+            wb.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -298,6 +388,8 @@ public class TesGUI extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnDelete;
+    private javax.swing.JButton btnSimpan;
+    private javax.swing.JButton btnTampil;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
